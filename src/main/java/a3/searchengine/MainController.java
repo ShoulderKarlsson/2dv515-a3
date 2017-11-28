@@ -8,7 +8,7 @@ public class MainController {
 
     @RequestMapping("/search")
     public String search() {
-        
+
 
 
 
