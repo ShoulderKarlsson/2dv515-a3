@@ -22,7 +22,7 @@ public class PageBucketSearch {
             Page page = getPage(i);
             frequenceyScore[i] = countWordFrequencyScore(page, queryWords);
             locationScore[i] = countWordLocationScore(page, queryWords);
-            System.out.println("Done with page " + page.getUrl() + " " + i + "/" + this.pb.pages.size());
+            System.out.println("Done with " + i + "/" + this.pb.pages.size());
         }
 
         normalize(frequenceyScore, false);
