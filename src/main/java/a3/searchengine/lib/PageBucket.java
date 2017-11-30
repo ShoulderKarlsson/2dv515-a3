@@ -38,9 +38,7 @@ public class PageBucket {
 
             Files.lines(wordsFile.toPath()).forEach(line -> {
                 String[] wordsList =  line.split(" ");
-                Arrays.stream(wordsList).forEach(word -> {
-                    words.add(this.getIdForWord(word));
-                });
+                Arrays.stream(wordsList).forEach(word -> words.add(this.getIdForWord(word)));
             });
 
             br.close();
