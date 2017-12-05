@@ -5,6 +5,8 @@ import java.util.Collections;
 
 public class PageBucketSearch {
     public PageBucket pb;
+    private final int pageRankIterations = 20;
+//    private ArrayList<Page> pages;
 
     public PageBucketSearch(PageBucket pb) {
         this.pb = pb;
@@ -22,7 +24,7 @@ public class PageBucketSearch {
             Page page = getPage(i);
             frequenceyScore[i] = countWordFrequencyScore(page, queryWords);
             locationScore[i] = countWordLocationScore(page, queryWords);
-            System.out.println("Done with " + i + "/" + this.pb.pages.size());
+//            System.out.println("Done with " + i + "/" + this.pb.pages.size());
         }
 
         normalize(frequenceyScore, false);
@@ -108,49 +110,16 @@ public class PageBucketSearch {
                 wasFound = false;
             }
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//        for (String word : queryWords) {
-//            for (int i = 0; i < page.getWords().size(); i++) {
-//                wasFound = false;
-//                int wordId = this.pb.getIdForWord(word);
-//
-//                for (int pageWordId : page.getWords()) {
-//                    if (pageWordId == wordId) {
-//                        wasFound = true;
-//                        score += i;
-//                        System.out.println("FOUND BREAK");
-//                        break;
-//                    }
-//                }
-//
-//                if (!wasFound) {
-//                    score = 100000;
-//                }
-//            }
-//        }
-
         return score;
+    }
+
+    public void calculatePageRank() {
+        System.out.println("Doing some heavy calculations!!");
+        for (int i = 0; i < pageRankIterations; i++) {
+            this.pb.pages.forEach(page -> {
+
+            });
+        }
     }
 
 
