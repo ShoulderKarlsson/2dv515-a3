@@ -17,11 +17,10 @@ public class PageBucket {
 
 
     public PageBucket() {
-
         generateDB();
     }
 
-    public int getIdForWord(String word) {
+    int getIdForWord(String word) {
         if (wordId.containsKey(word)) {
             return wordId.get(word);
         }
@@ -71,29 +70,38 @@ public class PageBucket {
     }
 
     private void generateDB() {
-        try {
-            File mainDir = ResourceUtils.getFile("classpath:Wikipedia/Words/");
-            for (File mainDirFile : mainDir.listFiles()) {
-                for (File wordBag : mainDirFile.listFiles()) {
-                    this.generatePage(
-                            "/wiki/" + wordBag.getName(),
-                            wordBag,
-                            this.getLinksFile(mainDirFile.getName(), wordBag.getName())
-                    );
+        if (this.isDataIndexesStored()) {
+            System.out.println("Data is stored on disk, collecting data from that");
+        } else {
+            try {
+                File mainDir = ResourceUtils.getFile("classpath:Wikipedia/Words/");
+                for (File mainDirFile : mainDir.listFiles()) {
+                    for (File wordBag : mainDirFile.listFiles()) {
+                        this.generatePage(
+                                "/wiki/" + wordBag.getName(),
+                                wordBag,
+                                this.getLinksFile(mainDirFile.getName(), wordBag.getName())
+                        );
+                    }
                 }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
-
-        storeDataToIndex();
     }
 
-    private boolean tryFetchDataFromIndex() {
+    boolean isDataIndexesStored() {
+        File f = new File("src/main/resources/DB");
+        if (f.exists() && f.isDirectory()) {
+            System.out.println("Found indexed data, will not store");
+            return true;
+        }
+
         return false;
     }
 
-    private void storeDataToIndex() {
+
+    void storeDataToIndex() {
         JSONArray pageData = createJSONData();
         JSONArray wordTOIdData = buildWordToIdJSONData();
         storeFile(pageData, "PageData.json");

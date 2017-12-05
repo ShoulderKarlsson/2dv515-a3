@@ -6,7 +6,6 @@ import java.util.Collections;
 public class PageBucketSearch {
     public PageBucket pb;
     private final int pageRankIterations = 3;
-//    private ArrayList<Page> pages;
 
     public PageBucketSearch(PageBucket pb) {
         this.pb = pb;
@@ -33,16 +32,22 @@ public class PageBucketSearch {
 
         for (int i = 0; i < this.pb.pages.size(); i++) {
             Page p = getPage(i);
-//            double score = 1.0 * frequenceyScore[i] + 0.5 * locationScore[i];
             double score = 1.0 * frequenceyScore[i] + 1.0 * p.pageRank + 0.5 * locationScore[i];
             searchResult.add(new SearchResult(p, score));
         }
 
         Collections.sort(searchResult);
-        System.out.println("Search result: " + query);
         int limit = 5;
         for (int i = 0; i < limit; i++) {
             System.out.println(searchResult.get(i).toString());
+        }
+
+        if (!this.pb.isDataIndexesStored()) {
+            System.out.println("Could not find indexed data => storing...");
+            this.pb.storeDataToIndex();
+            System.out.println("Data stored on disk...");
+        } else {
+            System.out.println("Data was stored, not storing it again...");
         }
 
         return searchResult;
