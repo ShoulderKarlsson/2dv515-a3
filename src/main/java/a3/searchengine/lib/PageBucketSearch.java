@@ -5,26 +5,27 @@ import java.util.Collections;
 
 public class PageBucketSearch {
     public PageBucket pb;
-    private final int pageRankIterations = 20;
+    private final int pageRankIterations = 3;
 //    private ArrayList<Page> pages;
 
     public PageBucketSearch(PageBucket pb) {
         this.pb = pb;
     }
 
-    public void search(String query) {
+    public ArrayList<SearchResult> search(String query) {
         ArrayList<SearchResult> searchResult = new ArrayList<>();
 
         double[] frequenceyScore = new double[this.pb.pages.size()];
         double[] locationScore = new double[this.pb.pages.size()];
 
         String[] queryWords = query.split(" ");
+        calculatePageRank();
 
         for (int i = 0; i < this.pb.pages.size(); i++) {
             Page page = getPage(i);
             frequenceyScore[i] = countWordFrequencyScore(page, queryWords);
             locationScore[i] = countWordLocationScore(page, queryWords);
-//            System.out.println("Done with " + i + "/" + this.pb.pages.size());
+
         }
 
         normalize(frequenceyScore, false);
@@ -32,7 +33,8 @@ public class PageBucketSearch {
 
         for (int i = 0; i < this.pb.pages.size(); i++) {
             Page p = getPage(i);
-            double score = 1.0 * frequenceyScore[i] + 0.5 * locationScore[i];
+//            double score = 1.0 * frequenceyScore[i] + 0.5 * locationScore[i];
+            double score = 1.0 * frequenceyScore[i] + 1.0 * p.pageRank + 0.5 * locationScore[i];
             searchResult.add(new SearchResult(p, score));
         }
 
@@ -43,6 +45,7 @@ public class PageBucketSearch {
             System.out.println(searchResult.get(i).toString());
         }
 
+        return searchResult;
     }
 
     private Page getPage(int i) {
@@ -114,20 +117,32 @@ public class PageBucketSearch {
     }
 
     public void calculatePageRank() {
-        System.out.println("Doing some heavy calculations!!");
+//        System.out.println("Doing some heavy calculations!!");
         for (int i = 0; i < pageRankIterations; i++) {
-            this.pb.pages.forEach(page -> {
+            for (Page p : this.pb.pages) {
+                iteratePageRank(p);
+            }
 
-            });
+            System.out.println("Iteration done! " + i + " / " + pageRankIterations);
         }
     }
 
+    private void iteratePageRank(Page p) {
+        double pr = 0;
+
+        for (Page po : this.pb.pages) {
+            if (po.hasLinkTo(p.getUrl())) {
+                pr += po.pageRank / (double) po.getAmountOfLinks();
+            }
+        }
+
+        p.pageRank = 0.85 * pr + 0.15;
+    }
 
 
-
-    private class SearchResult implements Comparable<SearchResult> {
-        Page p;
-        double score;
+    public class SearchResult implements Comparable<SearchResult> {
+        public Page p;
+        public double score;
         SearchResult(Page p, double score) {
             this.p = p;
             this.score = score;

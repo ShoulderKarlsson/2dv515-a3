@@ -16,6 +16,7 @@ public class PageBucket {
 
 
     public PageBucket() {
+
         generateDB();
     }
 
@@ -49,6 +50,7 @@ public class PageBucket {
                 String[] wordsList = line.split(separator);
                 Arrays.stream(wordsList).forEach(word -> fileData.add(this.getIdForWord(word)));
             });
+            br.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
