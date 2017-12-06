@@ -1,15 +1,9 @@
 package a3.searchengine.lib;
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.springframework.util.ResourceUtils;
 
 import java.io.*;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class PageBucket {
     HashMap<String, Integer> wordId = new HashMap<>();
@@ -70,90 +64,31 @@ public class PageBucket {
     }
 
     private void generateDB() {
-        if (this.isDataIndexesStored()) {
-            System.out.println("Data is stored on disk, collecting data from that");
-        } else {
-            try {
-                File mainDir = ResourceUtils.getFile("classpath:Wikipedia/Words/");
-                for (File mainDirFile : mainDir.listFiles()) {
-                    for (File wordBag : mainDirFile.listFiles()) {
-                        this.generatePage(
-                                "/wiki/" + wordBag.getName(),
-                                wordBag,
-                                this.getLinksFile(mainDirFile.getName(), wordBag.getName())
-                        );
-                    }
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    boolean isDataIndexesStored() {
-        File f = new File("src/main/resources/DB");
-        if (f.exists() && f.isDirectory()) {
-            System.out.println("Found indexed data, will not store");
-            return true;
-        }
-
-        return false;
-    }
-
-
-    void storeDataToIndex() {
-        JSONArray pageData = createJSONData();
-        JSONArray wordTOIdData = buildWordToIdJSONData();
-        storeFile(pageData, "PageData.json");
-        storeFile(wordTOIdData, "WordToIdData.json");
-    }
-
-    private void storeFile(JSONArray json, String name) {
-        File dir = new File("src/main/resources/DB");
-        if (!dir.exists()) {
-            dir.mkdir();
-        }
-
         try {
-            FileWriter fileWriter = new FileWriter("src/main/resources/DB/" + name);
-            fileWriter.write(json.toJSONString());
-            fileWriter.close();
+            File mainDir = ResourceUtils.getFile("classpath:Wikipedia/Words/");
+            for (File mainDirFile : mainDir.listFiles()) {
+                for (File wordBag : mainDirFile.listFiles()) {
+                    this.generatePage(
+                            "/wiki/" + wordBag.getName(),
+                            wordBag,
+                            this.getLinksFile(mainDirFile.getName(), wordBag.getName())
+                    );
+                }
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
 
+
+        FileStorage fs = new FileStorage();
+        fs.write(pages, "pages");
+        fs.write(wordId, "wordIds");
+
+        fs.readPages("pages");
+        fs.readWordtoIds("wordIds");
+
+        System.out.println(fs);
     }
-
-    public JSONArray buildWordToIdJSONData() {
-        JSONArray json = new JSONArray();
-        for (Map.Entry<String, Integer> entry : wordId.entrySet()) {
-            JSONObject data = new JSONObject();
-            data.put(entry.getKey(), entry.getValue());
-            json.add(data);
-        }
-
-        return json;
-    }
-
-    private JSONArray createJSONData() {
-        JSONArray json = new JSONArray();
-        for (Page p : pages) {
-            JSONObject pageJSON = new JSONObject();
-            JSONArray wordsJsonArray = new JSONArray();
-            wordsJsonArray.addAll(p.words);
-            JSONArray linksJsonArray = new JSONArray();
-            linksJsonArray.addAll(p.links);
-            pageJSON.put("url", p.getUrl());
-            pageJSON.put("pageRank", p.pageRank);
-            pageJSON.put("words", wordsJsonArray);
-            pageJSON.put("links", linksJsonArray);
-
-            json.add(pageJSON);
-        }
-
-        return json;
-    }
-
     private File getLinksFile(String mainDirectoryName, String pageName) {
         try {
             return ResourceUtils.getFile("classpath:Wikipedia/Links/" + mainDirectoryName + "/" + pageName);

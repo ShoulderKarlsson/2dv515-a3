@@ -23,3 +23,5 @@ dist/
 nbdist/
 .nb-gradle/
 src/main/resources/DB
+src/main/resources/pages.ser
+src/main/resources/wordIds.ser

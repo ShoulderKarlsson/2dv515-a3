@@ -18,8 +18,8 @@ public class PageBucketSearch {
         double[] locationScore = new double[this.pb.pages.size()];
 
         String[] queryWords = query.split(" ");
-        calculatePageRank();
 
+        calculatePageRank();
         for (int i = 0; i < this.pb.pages.size(); i++) {
             Page page = getPage(i);
             frequenceyScore[i] = countWordFrequencyScore(page, queryWords);
@@ -42,13 +42,13 @@ public class PageBucketSearch {
             System.out.println(searchResult.get(i).toString());
         }
 
-        if (!this.pb.isDataIndexesStored()) {
-            System.out.println("Could not find indexed data => storing...");
-            this.pb.storeDataToIndex();
-            System.out.println("Data stored on disk...");
-        } else {
-            System.out.println("Data was stored, not storing it again...");
-        }
+//        if (!this.pb.isDataIndexesStored()) {
+//            System.out.println("Could not find indexed data => storing...");
+//            this.pb.storeDataToIndex();
+//            System.out.println("Data stored on disk...");
+//        } else {
+//            System.out.println("Data was stored, not storing it again...");
+//        }
 
         return searchResult;
     }
@@ -90,7 +90,7 @@ public class PageBucketSearch {
         double score = 0;
         for (String word : queryWords) {
             int wordId = this.pb.getIdForWord(word);
-            for (int pageWordId : page.getWords()) {
+            for (double pageWordId : page.getWords()) {
                 if (wordId == pageWordId) score++;
             }
         }
@@ -122,7 +122,6 @@ public class PageBucketSearch {
     }
 
     public void calculatePageRank() {
-//        System.out.println("Doing some heavy calculations!!");
         for (int i = 0; i < pageRankIterations; i++) {
             for (Page p : this.pb.pages) {
                 iteratePageRank(p);
