@@ -42,13 +42,12 @@ public class PageBucketSearch {
             System.out.println(searchResult.get(i).toString());
         }
 
-//        if (!this.pb.isDataIndexesStored()) {
-//            System.out.println("Could not find indexed data => storing...");
-//            this.pb.storeDataToIndex();
-//            System.out.println("Data stored on disk...");
-//        } else {
-//            System.out.println("Data was stored, not storing it again...");
-//        }
+
+        if (!this.pb.isDataOnDisk()) {
+            this.pb.writeDb();
+        } else {
+            System.out.println(" > Data was stored, doing nothing...");
+        }
 
         return searchResult;
     }

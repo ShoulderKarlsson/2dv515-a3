@@ -7,6 +7,21 @@ import java.util.HashMap;
 
 public class FileStorage {
 
+    FileStorage() {
+        createFolderForFiles();
+    }
+
+
+    /**
+     * Creating DB folder if there is none present
+     */
+    private void createFolderForFiles() {
+        File f = new File("./src/main/resources/DB");
+        if (!f.exists() && !f.isDirectory()) {
+            f.mkdir();
+        }
+    }
+
     public void write(Collection col, String fileName) {
         try {
             FileOutputStream fos = new FileOutputStream(this.getFilePath(fileName));
@@ -17,22 +32,17 @@ public class FileStorage {
         }
     }
 
-    public void write(HashMap<String, Integer> col, String fileName) {
+    public void write(HashMap<String, Integer> map, String fileName) {
         try {
             FileOutputStream fos = new FileOutputStream(this.getFilePath(fileName));
             ObjectOutputStream oos = new ObjectOutputStream(fos);
-            oos.writeObject(col);
+            oos.writeObject(map);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-
-    private String getFilePath(String fileName) {
-        return "./src/main/resources/" + fileName + ".ser";
-    }
-
-    public ArrayList<Page> readPages(String fileName) {
+    ArrayList<Page> readPages(String fileName) {
         ArrayList<Page> pages = new ArrayList<>();
         try {
             ObjectInputStream ois = new ObjectInputStream(new FileInputStream(this.getFilePath(fileName)));
@@ -45,7 +55,7 @@ public class FileStorage {
         return pages;
     }
 
-    public HashMap<String, Integer> readWordtoIds(String fileName) {
+    HashMap<String, Integer> readWordtoIds(String fileName) {
         HashMap<String, Integer> wordId = new HashMap<>();
 
         try {
@@ -60,12 +70,14 @@ public class FileStorage {
     }
 
 
-    public boolean isDataStored() {
+    boolean isDataStored(String fileNameOne, String fileNameTwo) {
+        File fileOne = new File(this.getFilePath(fileNameOne));
+        File fileTwo = new File(this.getFilePath(fileNameTwo));
 
+        return fileOne.exists() && fileTwo.exists();
+    }
 
-        // TODO: Implement..?
-
-
-        return false;
+    private String getFilePath(String fileName) {
+        return "./src/main/resources/DB/" + fileName + ".ser";
     }
 }

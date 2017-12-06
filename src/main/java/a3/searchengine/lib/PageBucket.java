@@ -1,4 +1,5 @@
 package a3.searchengine.lib;
+
 import org.springframework.util.ResourceUtils;
 
 import java.io.*;
@@ -6,12 +7,30 @@ import java.nio.file.Files;
 import java.util.*;
 
 public class PageBucket {
+    private FileStorage fs = new FileStorage();
     HashMap<String, Integer> wordId = new HashMap<>();
     ArrayList<Page> pages = new ArrayList<>();
+    private final String PAGE_DATA_FILE = "PAGE_DATA";
+    private final String WORD_TO_ID_FILE = "WORD_TO_ID_FILE";
 
 
     public PageBucket() {
         generateDB();
+    }
+
+
+    void writeDb() {
+
+        System.out.println(" > Starting writing to disk..");
+        fs.write(pages, PAGE_DATA_FILE);
+        System.out.println(" > Pages done..");
+
+        fs.write(wordId, WORD_TO_ID_FILE);
+        System.out.println(" > wordIds done..");
+    }
+
+    boolean isDataOnDisk() {
+        return fs.isDataStored(PAGE_DATA_FILE, WORD_TO_ID_FILE);
     }
 
     int getIdForWord(String word) {
@@ -64,31 +83,30 @@ public class PageBucket {
     }
 
     private void generateDB() {
-        try {
-            File mainDir = ResourceUtils.getFile("classpath:Wikipedia/Words/");
-            for (File mainDirFile : mainDir.listFiles()) {
-                for (File wordBag : mainDirFile.listFiles()) {
-                    this.generatePage(
-                            "/wiki/" + wordBag.getName(),
-                            wordBag,
-                            this.getLinksFile(mainDirFile.getName(), wordBag.getName())
-                    );
+        if (this.isDataOnDisk()) {
+            System.out.println(" > Data found on disk, fetching...");
+            wordId = fs.readWordtoIds(WORD_TO_ID_FILE);
+            pages = fs.readPages(PAGE_DATA_FILE);
+            System.out.println(" > Data loaded from disk...");
+        } else {
+            System.out.println(" > Generating new data...");
+            try {
+                File mainDir = ResourceUtils.getFile("classpath:Wikipedia/Words/");
+                for (File mainDirFile : mainDir.listFiles()) {
+                    for (File wordBag : mainDirFile.listFiles()) {
+                        this.generatePage(
+                                "/wiki/" + wordBag.getName(),
+                                wordBag,
+                                this.getLinksFile(mainDirFile.getName(), wordBag.getName())
+                        );
+                    }
                 }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
-
-
-        FileStorage fs = new FileStorage();
-        fs.write(pages, "pages");
-        fs.write(wordId, "wordIds");
-
-        fs.readPages("pages");
-        fs.readWordtoIds("wordIds");
-
-        System.out.println(fs);
     }
+
     private File getLinksFile(String mainDirectoryName, String pageName) {
         try {
             return ResourceUtils.getFile("classpath:Wikipedia/Links/" + mainDirectoryName + "/" + pageName);
