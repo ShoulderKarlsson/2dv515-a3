@@ -9,6 +9,7 @@ import java.util.ArrayList;
 @RestController
 public class MainController {
 
+    @CrossOrigin(origins = "http://localhost:3000")
     @ResponseBody
     @RequestMapping(value = "/search/{query}", method = RequestMethod.GET, produces = "application/json")
     public ArrayList<PageBucketSearch.SearchResult> search(@PathVariable String query) {

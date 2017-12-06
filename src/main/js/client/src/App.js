@@ -1,7 +1,7 @@
 import React from 'react'
 import {compose, withState, withHandlers} from 'recompose'
 import {Result} from './components/Result'
-import fetch from 'isomorphic-fetch'
+// import fetch from 'isomorphic-fetch'
 
 const enhance = compose(
   withState('query', 'setQuery', ''),
@@ -13,20 +13,17 @@ const enhance = compose(
       }
 
       fetch(`http://localhost:8080/search/${query}`, {
-        method: 'GET',
-        mode: 'cors',
         headers: {
-          Accept: 'application/json',
-          // 'Access-Control-Allow-Origin': '*',
-        },
+          'Access-Control-Allow-Origin': '*'
+        }
       })
-        .then(response => response.json())
-        .then(result => {
-          console.log(result)
+        .then(res => res.json())
+        .then(searchResult => {
+          setResults([...searchResult.slice(0, 10)])
         })
         .catch(error => console.log(error))
     },
-  }),
+  })
 )
 
 export const App = enhance(({results, setQuery, search, ...props}) => {
@@ -39,7 +36,7 @@ export const App = enhance(({results, setQuery, search, ...props}) => {
       </div>
 
       <div className="bottom-section">
-        {results.lenght
+        {results.length
           ? results.map((result, i) => <Result {...result} key={i} />)
           : null}
       </div>
