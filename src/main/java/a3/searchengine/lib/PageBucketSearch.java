@@ -5,10 +5,15 @@ import java.util.Collections;
 
 public class PageBucketSearch {
     public PageBucket pb;
-    private final int pageRankIterations = 3;
+    private final int pageRankIterations = 5;
 
     public PageBucketSearch(PageBucket pb) {
         this.pb = pb;
+
+        if (!pb.isDataOnDisk()) {
+            System.out.println(" > Data was not on disk, ranking pages...");
+            calculatePageRank();
+        }
     }
 
     public ArrayList<SearchResult> search(String query) {
@@ -19,7 +24,6 @@ public class PageBucketSearch {
 
         String[] queryWords = query.split(" ");
 
-        calculatePageRank();
         for (int i = 0; i < this.pb.pages.size(); i++) {
             Page page = getPage(i);
             frequenceyScore[i] = countWordFrequencyScore(page, queryWords);
@@ -42,11 +46,8 @@ public class PageBucketSearch {
             System.out.println(searchResult.get(i).toString());
         }
 
-
         if (!this.pb.isDataOnDisk()) {
             this.pb.writeDb();
-        } else {
-            System.out.println(" > Data was stored, doing nothing...");
         }
 
         return searchResult;
@@ -120,13 +121,13 @@ public class PageBucketSearch {
         return score;
     }
 
-    public void calculatePageRank() {
+    private void calculatePageRank() {
         for (int i = 0; i < pageRankIterations; i++) {
             for (Page p : this.pb.pages) {
                 iteratePageRank(p);
             }
 
-            System.out.println("Iteration done! " + i + " / " + pageRankIterations);
+            System.out.println("Page Rank iteration done - " + i + " / " + pageRankIterations);
         }
     }
 

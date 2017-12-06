@@ -19,7 +19,7 @@ const enhance = compose(
       })
         .then(res => res.json())
         .then(searchResult => {
-          setResults([...searchResult.slice(0, 10)])
+          setResults([...searchResult.slice(0, 5)])
         })
         .catch(error => console.log(error))
     },

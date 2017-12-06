@@ -1,7 +1,6 @@
 import * as React from 'react'
 
-export const Result = ({score, p: {url}, ...props}) => {
-	console.log(props)
+export const Result = ({score, p: {url}}) => {
 	return (
 		<div className="result-container">
 			<p>score: {score}</p>
