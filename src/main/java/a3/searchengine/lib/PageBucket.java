@@ -19,6 +19,9 @@ public class PageBucket {
     }
 
 
+    /**
+     * Writes the data stored in memory to disk
+     */
     void writeDb() {
 
         System.out.println(" > Starting writing to disk..");
@@ -82,6 +85,12 @@ public class PageBucket {
         return fileData;
     }
 
+    /**
+     * Generates the "database" used for the calculations
+     *
+     * If the data is already used previously it will load it from disk
+     * else if will generate the data from scratch and then write it to disk
+     */
     private void generateDB() {
         if (this.isDataOnDisk()) {
             System.out.println(" > Data found on disk, fetching...");

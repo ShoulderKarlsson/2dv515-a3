@@ -10,6 +10,9 @@ public class PageBucketSearch {
     public PageBucketSearch(PageBucket pb) {
         this.pb = pb;
 
+
+        // If the data is not stored on disk
+        // we must rank pages
         if (!pb.isDataOnDisk()) {
             System.out.println(" > Data was not on disk, ranking pages...");
             calculatePageRank();
@@ -57,6 +60,13 @@ public class PageBucketSearch {
         return this.pb.pages.get(i);
     }
 
+
+    /**
+     * Normalizes score, dependant
+     * if we want to score to be low or high.
+     * @param scores int
+     * @param wantSmall boolean
+     */
     private void normalize(double[] scores, boolean wantSmall) {
 
         // Yes
@@ -85,7 +95,12 @@ public class PageBucketSearch {
         }
     }
 
-
+    /**
+     * Counts the frequency of words
+     * @param page
+     * @param queryWords
+     * @return
+     */
     private double countWordFrequencyScore(Page page, String[] queryWords) {
         double score = 0;
         for (String word : queryWords) {
@@ -98,6 +113,12 @@ public class PageBucketSearch {
         return score;
     }
 
+    /**
+     * Calculates the location of the word on a page.
+     * @param page
+     * @param queryWords
+     * @return
+     */
     private double countWordLocationScore(Page page, String[] queryWords) {
         double score = 0;
         boolean wasFound = false;
@@ -120,6 +141,7 @@ public class PageBucketSearch {
         }
         return score;
     }
+
 
     private void calculatePageRank() {
         for (int i = 0; i < pageRankIterations; i++) {
