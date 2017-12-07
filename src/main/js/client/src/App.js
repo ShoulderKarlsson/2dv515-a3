@@ -20,15 +20,6 @@ const enhance = compose(
       if (results.length) setResults([])
       if (!isSearching) setIsSearching(true)
 
-      // setTimeout(() => {
-      //   setIsSearching(false)
-      //   setResults([
-      //     {score: 1.123123, p: {url: '/wiki/Java_Programming_Language'}},
-      //     {score: 1.13123, p: {url: '/wiki/Object_oriented'}},
-      //     {score: 1.1239103123, p: {url: '/wiki/FunctionalProgramming'}},
-      //   ])
-      // }, 1000)
-
       // using native chrome fetch
       fetch(`http://localhost:8080/search/${query}`, {
         headers: {
