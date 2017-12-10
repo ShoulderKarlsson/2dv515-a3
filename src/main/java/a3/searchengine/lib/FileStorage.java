@@ -42,6 +42,10 @@ public class FileStorage {
         }
     }
 
+    /**
+     * Reads file that contains the pages list
+     * @param fileName
+     */
     ArrayList<Page> readPages(String fileName) {
         ArrayList<Page> pages = new ArrayList<>();
         try {
@@ -55,6 +59,10 @@ public class FileStorage {
         return pages;
     }
 
+    /**
+     * Reads file that contains word to ids serialized obj
+     * @param fileName name of file
+     */
     HashMap<String, Integer> readWordtoIds(String fileName) {
         HashMap<String, Integer> wordId = new HashMap<>();
 
